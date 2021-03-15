@@ -1,0 +1,5 @@
+{
+  "name": "Emulated color temp light",
+  "render_readme": true,
+  "domains": "light"
+}
