@@ -2,5 +2,5 @@
   "name": "Emulated color temp light",
   "render_readme": true,
   "domains": "light",
-  "iot_class": ["Local Push"]
+  "iot_class": "Local Push"
 }
