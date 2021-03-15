@@ -1,9 +1,0 @@
-{
-  "domain": "emulated_color_temp",
-  "name": "Emulated Color Temp Light",
-  "documentation": "https://github.com/Mr-Groch/HA-Emulated-Color-Temp-Light",
-  "dependencies": [],
-  "codeowners": ["@Mr-Groch"],
-  "requirements": [],
-  "version": "0.0.1"
-}
