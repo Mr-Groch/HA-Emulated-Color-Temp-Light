@@ -32,10 +32,18 @@ After adding a custom repository you can use HACS to install this integration us
 
 After installation of the custom component, it needs to be configured in `configuration.yaml` file.
 
-Add this to your `configuration.yaml` (edit `name` to your desired entity name and `entity_id` to your original light entity id without color temperature support):
+Add this to your `configuration.yaml` (this is example config):
 ```
 light:
   - platform: emulated_color_temp
     name: Your new light name
     entity_id: light.original_light_entity
 ```
+
+Available options:
+
+| Option | Required | Description |
+| - | - | - |
+| name | Yes | Desired entity name |
+| entity_id | Yes | Original light entity id without color temperature support |
+| offset | No | Color temperature offset in mireds, can be positive (max: 500) and negative (min: -129). Ikea Tradfri warm color bulbs need to have a little negative offset. (default: 0) |
