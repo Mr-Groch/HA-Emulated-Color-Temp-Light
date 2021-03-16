@@ -32,6 +32,7 @@ from homeassistant.const import (
     ATTR_SUPPORTED_FEATURES,
     CONF_ENTITY_ID,
     CONF_NAME,
+    CONF_OFFSET,
     EVENT_HOMEASSISTANT_START,
     STATE_ON,
     STATE_UNAVAILABLE,
@@ -46,6 +47,9 @@ from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_ENTITY_ID): cv.entity_domain(light.DOMAIN),
     vol.Required(CONF_NAME): cv.string,
+    vol.Optional(CONF_OFFSET, default=0): vol.All(
+            vol.Coerce(int), vol.Range(min=-129, max=500)
+        ),
 })
 
 
@@ -57,18 +61,20 @@ async def async_setup_platform(
     # The configuration check takes care they are present.
     light_entity = config[CONF_ENTITY_ID]
     name = config[CONF_NAME]
+    offset = config[CONF_OFFSET]
 
     # Add devices
-    async_add_entities([EmulatedColorTempLight(light_entity, name)])
+    async_add_entities([EmulatedColorTempLight(light_entity, name, offset)])
 
 
 class EmulatedColorTempLight(light.LightEntity):
     """Representation of Light."""
 
-    def __init__(self, light_entity, name):
+    def __init__(self, light_entity, name, offset):
         """Initialize Light."""
         self._light = light_entity
         self._name = name
+        self._offset = offset
         self._is_on = False
         self._available = False
         self._brightness: Optional[int] = None
@@ -235,7 +241,7 @@ class EmulatedColorTempLight(light.LightEntity):
 
         emulate_color_temp_data = data.copy()
         temp_k = color_util.color_temperature_mired_to_kelvin(
-            emulate_color_temp_data[ATTR_COLOR_TEMP]
+            emulate_color_temp_data[ATTR_COLOR_TEMP] + self._offset
         )
         hs_color = color_util.color_temperature_to_hs(temp_k)
         emulate_color_temp_data[ATTR_HS_COLOR] = hs_color
