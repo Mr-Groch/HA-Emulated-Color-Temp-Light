@@ -247,23 +247,12 @@ class EmulatedColorTempLight(light.LightEntity):
         emulate_color_temp_data[ATTR_HS_COLOR] = hs_color
         del emulate_color_temp_data[ATTR_COLOR_TEMP]
 
-        emulate_color_temp_data[ATTR_ENTITY_ID] = self._light
-
-        await asyncio.gather(
-            self.hass.services.async_call(
-                light.DOMAIN,
-                light.SERVICE_TURN_ON,
-                data,
-                blocking=True,
-                context=self._context,
-            ),
-            self.hass.services.async_call(
-                light.DOMAIN,
-                light.SERVICE_TURN_ON,
-                emulate_color_temp_data,
-                blocking=True,
-                context=self._context,
-            ),
+        await self.hass.services.async_call(
+            light.DOMAIN,
+            light.SERVICE_TURN_ON,
+            emulate_color_temp_data,
+            blocking=True,
+            context=self._context,
         )
 
     async def async_turn_off(self, **kwargs):
