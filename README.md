@@ -1,4 +1,4 @@
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
 [![Community Forum](https://img.shields.io/badge/Community-Forum-41BDF5.svg)](https://community.home-assistant.io/t/emulated-color-temp-light/291271)
 [![paypalme_badge](https://img.shields.io/badge/Donate-PayPal-0070ba)](https://paypal.me/MrGroch)
 [![Buy me a coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/MrGroch)
@@ -15,11 +15,7 @@ This is basically copy of HA core light group entity, but with support for only 
 
 ### Using [HACS](https://hacs.xyz/) (recommended)
 
-This integration can be added to HACS as a [custom repository](https://hacs.xyz/docs/faq/custom_repositories):
-* URL: `https://github.com/Mr-Groch/HA-Emulated-Color-Temp-Light`
-* Category: `Integration`
-
-After adding a custom repository you can use HACS to install this integration using user interface.
+This integration can be installed using HACS. To do it search for `Emulated color temp light` in Integrations section.
 
 ### Manual
 
