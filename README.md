@@ -46,3 +46,4 @@ Available options:
 | name | Yes | Desired entity name |
 | entity_id | Yes | Original light entity id without color temperature support |
 | offset | No | Color temperature offset in mireds, can be positive (max: 500) and negative (min: -129). [Ikea Tradfri warm color bulbs](https://www.zigbee2mqtt.io/devices/LED1924G9.html#ikea-led1924g9) need to have about -100 offset. (default: 0) |
+| unique_id | No | The unique ID for this entity. If not provided, integration will try to use unique ID from original light entity |
