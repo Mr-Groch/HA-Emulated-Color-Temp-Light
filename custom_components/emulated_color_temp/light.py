@@ -33,6 +33,7 @@ from homeassistant.const import (
     CONF_ENTITY_ID,
     CONF_NAME,
     CONF_OFFSET,
+    CONF_UNIQUE_ID,
     EVENT_HOMEASSISTANT_START,
     STATE_ON,
     STATE_UNAVAILABLE,
@@ -50,6 +51,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional(CONF_OFFSET, default=0): vol.All(
             vol.Coerce(int), vol.Range(min=-129, max=500)
         ),
+    vol.Optional(CONF_UNIQUE_ID): cv.string,
 })
 
 
@@ -62,15 +64,21 @@ async def async_setup_platform(
     light_entity = config[CONF_ENTITY_ID]
     name = config[CONF_NAME]
     offset = config[CONF_OFFSET]
+    unique_id = config.get(CONF_UNIQUE_ID)
+    
+    if unique_id is None:
+        registry = await hass.helpers.entity_registry.async_get_registry()
+        wrapped_light = registry.async_get(config[CONF_ENTITY_ID])
+        unique_id = wrapped_light.unique_id if wrapped_light else None
 
     # Add devices
-    async_add_entities([EmulatedColorTempLight(light_entity, name, offset)])
+    async_add_entities([EmulatedColorTempLight(light_entity, name, offset, unique_id)])
 
 
 class EmulatedColorTempLight(light.LightEntity):
     """Representation of Light."""
 
-    def __init__(self, light_entity, name, offset):
+    def __init__(self, light_entity, name, offset, unique_id):
         """Initialize Light."""
         self._light = light_entity
         self._name = name
@@ -86,6 +94,7 @@ class EmulatedColorTempLight(light.LightEntity):
         self._effect_list: Optional[List[str]] = None
         self._effect: Optional[str] = None
         self._supported_features: int = 0
+        self._unique_id = unique_id
 
     async def async_added_to_hass(self) -> None:
         """Register callbacks."""
@@ -187,6 +196,11 @@ class EmulatedColorTempLight(light.LightEntity):
     def should_poll(self) -> bool:
         """No polling needed"""
         return False
+        
+    @property
+    def unique_id(self):
+        """Return the unique id"""
+        return self._unique_id
         
     @property
     def extra_state_attributes(self):
