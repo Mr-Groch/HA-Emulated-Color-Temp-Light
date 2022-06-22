@@ -6,6 +6,6 @@
   "dependencies": [],
   "codeowners": ["@Mr-Groch"],
   "requirements": [],
-  "version": "0.1.3",
+  "version": "0.1.7",
   "iot_class": "calculated"
 }
