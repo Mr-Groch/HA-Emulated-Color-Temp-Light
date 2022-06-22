@@ -9,6 +9,7 @@ import homeassistant.helpers.config_validation as cv
 from homeassistant.components import light
 from homeassistant.components.light import (
     ATTR_BRIGHTNESS,
+    ATTR_COLOR_MODE,
     ATTR_COLOR_TEMP,
     ATTR_EFFECT,
     ATTR_EFFECT_LIST,
@@ -16,8 +17,14 @@ from homeassistant.components.light import (
     ATTR_HS_COLOR,
     ATTR_MAX_MIREDS,
     ATTR_MIN_MIREDS,
+    ATTR_RGB_COLOR,
+    ATTR_RGBW_COLOR,
+    ATTR_RGBWW_COLOR,
+    ATTR_SUPPORTED_COLOR_MODES,
     ATTR_TRANSITION,
     ATTR_WHITE_VALUE,
+    ATTR_XY_COLOR,
+    ColorMode,
     PLATFORM_SCHEMA,
     SUPPORT_BRIGHTNESS,
     SUPPORT_COLOR,
@@ -67,7 +74,7 @@ async def async_setup_platform(
     unique_id = config.get(CONF_UNIQUE_ID)
     
     if unique_id is None:
-        registry = await hass.helpers.entity_registry.async_get_registry()
+        registry = hass.helpers.entity_registry.async_get(hass)
         wrapped_light = registry.async_get(config[CONF_ENTITY_ID])
         unique_id = wrapped_light.unique_id if wrapped_light else None
 
@@ -87,12 +94,18 @@ class EmulatedColorTempLight(light.LightEntity):
         self._available = False
         self._brightness: Optional[int] = None
         self._hs_color: Optional[Tuple[float, float]] = None
+        self._rgb_color: Optional[Tuple[int, int, int]] = None
+        self._rgbw_color: Optional[Tuple[int, int, int, int]] = None
+        self._rgbww_color: Optional[Tuple[int, int, int, int, int]] = None
+        self._xy_color: Optional[Tuple[float, float]] = None
         self._color_temp: Optional[int] = None
         self._min_mireds: int = 154
         self._max_mireds: int = 500
         self._white_value: Optional[int] = None
         self._effect_list: Optional[List[str]] = None
         self._effect: Optional[str] = None
+        self._color_mode: Optional[str] = None
+        self._supported_color_modes:  Optional[set[str]] = None
         self._supported_features: int = 0
         self._unique_id = unique_id
 
@@ -156,7 +169,27 @@ class EmulatedColorTempLight(light.LightEntity):
     def hs_color(self) -> Optional[Tuple[float, float]]:
         """Return the hue and saturation color value [float, float]."""
         return self._hs_color
-        
+
+    @property
+    def rgb_color(self) -> Optional[Tuple[int, int, int]]:
+        """Return the rgb color value [int, int, int]."""
+        return self._rgb_color
+
+    @property
+    def rgbw_color(self) -> Optional[Tuple[int, int, int, int]]:
+        """Return the rgbw color value [int, int, int, int]."""
+        return self._rgbw_color
+
+    @property
+    def rgbww_color(self) -> Optional[Tuple[int, int, int, int, int]]:
+        """Return the rgbww color value [int, int, int, int, int]."""
+        return self._rgbww_color
+
+    @property
+    def xy_color(self) -> Optional[Tuple[float, float]]:
+        """Return the x and y color value [float, float]."""
+        return self._xy_color
+
     @property
     def color_temp(self) -> Optional[int]:
         """Return the CT color value in mireds."""
@@ -186,7 +219,17 @@ class EmulatedColorTempLight(light.LightEntity):
     def effect(self) -> Optional[str]:
         """Return the current effect."""
         return self._effect
-        
+
+    @property
+    def color_mode(self) -> Optional[str]:
+        """Return the current color mode."""
+        return self._color_mode
+
+    @property
+    def supported_color_modes(self) -> Optional[set[str]]:
+        """Flag supported color modes."""
+        return self._supported_color_modes
+
     @property
     def supported_features(self) -> int:
         """Flag supported features."""
@@ -218,6 +261,18 @@ class EmulatedColorTempLight(light.LightEntity):
 
         if ATTR_HS_COLOR in kwargs:
             data[ATTR_HS_COLOR] = kwargs[ATTR_HS_COLOR]
+        
+        if ATTR_RGB_COLOR in kwargs:
+            data[ATTR_RGB_COLOR] = kwargs[ATTR_RGB_COLOR]
+        
+        if ATTR_RGBW_COLOR in kwargs:
+            data[ATTR_RGBW_COLOR] = kwargs[ATTR_RGBW_COLOR]
+        
+        if ATTR_RGBWW_COLOR in kwargs:
+            data[ATTR_RGBWW_COLOR] = kwargs[ATTR_RGBWW_COLOR]
+        
+        if ATTR_XY_COLOR in kwargs:
+            data[ATTR_XY_COLOR] = kwargs[ATTR_XY_COLOR]
 
         if ATTR_COLOR_TEMP in kwargs:
             data[ATTR_COLOR_TEMP] = kwargs[ATTR_COLOR_TEMP]
@@ -294,6 +349,10 @@ class EmulatedColorTempLight(light.LightEntity):
         self._brightness = state.attributes.get(ATTR_BRIGHTNESS)
 
         self._hs_color = state.attributes.get(ATTR_HS_COLOR)
+        self._rgb_color = state.attributes.get(ATTR_RGB_COLOR)
+        self._rgbw_color = state.attributes.get(ATTR_RGBW_COLOR)
+        self._rgbww_color = state.attributes.get(ATTR_RGBWW_COLOR)
+        self._xy_color = state.attributes.get(ATTR_XY_COLOR)
 
         self._white_value = state.attributes.get(ATTR_WHITE_VALUE)
 
@@ -303,6 +362,11 @@ class EmulatedColorTempLight(light.LightEntity):
 
         self._effect_list = state.attributes.get(ATTR_EFFECT_LIST)
         self._effect = state.attributes.get(ATTR_EFFECT)
+        
+        self._color_mode = state.attributes.get(ATTR_COLOR_MODE)
+        supported_color_modes = list(state.attributes.get(ATTR_SUPPORTED_COLOR_MODES))
+        supported_color_modes.append(ColorMode.COLOR_TEMP)
+        self._supported_color_modes =  set(supported_color_modes)
         
         self._supported_features = state.attributes.get(ATTR_SUPPORTED_FEATURES)
         # Bitwise-or the supported features with the color temp feature
