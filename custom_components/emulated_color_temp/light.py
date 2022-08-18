@@ -22,7 +22,6 @@ from homeassistant.components.light import (
     ATTR_RGBWW_COLOR,
     ATTR_SUPPORTED_COLOR_MODES,
     ATTR_TRANSITION,
-    ATTR_WHITE_VALUE,
     ATTR_XY_COLOR,
     ColorMode,
     PLATFORM_SCHEMA,
@@ -32,7 +31,6 @@ from homeassistant.components.light import (
     SUPPORT_EFFECT,
     SUPPORT_FLASH,
     SUPPORT_TRANSITION,
-    SUPPORT_WHITE_VALUE,
 )
 from homeassistant.const import (
     ATTR_ENTITY_ID,
@@ -101,7 +99,6 @@ class EmulatedColorTempLight(light.LightEntity):
         self._color_temp: Optional[int] = None
         self._min_mireds: int = 154
         self._max_mireds: int = 500
-        self._white_value: Optional[int] = None
         self._effect_list: Optional[List[str]] = None
         self._effect: Optional[str] = None
         self._color_mode: Optional[str] = None
@@ -206,11 +203,6 @@ class EmulatedColorTempLight(light.LightEntity):
         return self._max_mireds
         
     @property
-    def white_value(self) -> Optional[int]:
-        """Return the white value of this light group between 0..255."""
-        return self._white_value
-        
-    @property
     def effect_list(self) -> Optional[List[str]]:
         """Return the list of supported effects."""
         return self._effect_list
@@ -286,9 +278,6 @@ class EmulatedColorTempLight(light.LightEntity):
                 emulate_color_temp = True
                 self._color_temp = data[ATTR_COLOR_TEMP]
 
-        if ATTR_WHITE_VALUE in kwargs:
-            data[ATTR_WHITE_VALUE] = kwargs[ATTR_WHITE_VALUE]
-
         if ATTR_EFFECT in kwargs:
             data[ATTR_EFFECT] = kwargs[ATTR_EFFECT]
 
@@ -353,8 +342,6 @@ class EmulatedColorTempLight(light.LightEntity):
         self._rgbw_color = state.attributes.get(ATTR_RGBW_COLOR)
         self._rgbww_color = state.attributes.get(ATTR_RGBWW_COLOR)
         self._xy_color = state.attributes.get(ATTR_XY_COLOR)
-
-        self._white_value = state.attributes.get(ATTR_WHITE_VALUE)
 
         self._color_temp = state.attributes.get(ATTR_COLOR_TEMP, self._color_temp)
         self._min_mireds = state.attributes.get(ATTR_MIN_MIREDS, 154)
